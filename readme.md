@@ -1,6 +1,6 @@
-# Unofficial Schwab API Client, in golang
+## Unofficial Schwab API Client, in golang
 
-## Environemnt Variables
+### Environemnt Variables
 | Key | Value |
 | --- | ----- |
 | schwab_appkey | **** |
