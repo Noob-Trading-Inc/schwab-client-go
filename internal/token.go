@@ -36,6 +36,16 @@ type token struct {
 
 var Token = &token{}
 
+func (c *token) Reset() {
+	os.Remove(os.Getenv("schwab_tokenpath"))
+	c.BearerToken = ""
+	c.RefreshToken = ""
+}
+
+func (c *token) GetTokenForHeader() string {
+	return "Bearer " + c.GetToken()
+}
+
 func (c *token) GetToken() string {
 	clientID = os.Getenv("schwab_appkey")
 	clientSecret = os.Getenv("schwab_secret")
@@ -73,7 +83,7 @@ func (c *token) LoadNewToken() error {
 	go http.ListenAndServe(":9999", nil)
 
 	// 2 : OAuth - Authorization Code
-	util.Util.OpenBrowser(fmt.Sprintf("%s?client_id=%s&redirect_uri=%s", Endpoints.Auth, clientID, redirectURL))
+	util.Util.OpenBrowser(fmt.Sprintf("%s?client_id=%s&redirect_uri=%s&scope=readonly&response_type=code", Endpoints.Auth, clientID, redirectURL))
 	util.Util.Log("Waiting fot Auth Code...")
 	for authCodeEncoded == "" {
 		time.Sleep(1 * time.Second)
@@ -84,7 +94,7 @@ func (c *token) LoadNewToken() error {
 	}
 
 	// 3 : Get Refresh, Bearer Tokens
-	payload := fmt.Sprintf("grant_type=authorization_code&code=%s&redirect_uri=%s", authCode, redirectURL)
+	payload := fmt.Sprintf("grant_type=authorization_code&code=%s&client_id=%s&redirect_uri=%s", authCode, clientID, redirectURL)
 	return c.fetchTokens(payload)
 }
 

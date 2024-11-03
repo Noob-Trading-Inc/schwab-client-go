@@ -9,8 +9,13 @@ import (
 	"runtime"
 	"time"
 
+	"github.com/joho/godotenv"
 	"gopkg.in/yaml.v2"
 )
+
+func init() {
+	godotenv.Load()
+}
 
 type util struct{}
 
