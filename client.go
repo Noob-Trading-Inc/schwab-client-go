@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"schwab-client-go/internal"
 	"schwab-client-go/internal/marketdata"
 	"schwab-client-go/internal/trader"
@@ -23,7 +24,6 @@ func (c *client) Init() {
 	c.Quotes = marketdata.Quotes{}
 }
 
-/*
 func main() {
 	q, err := Client.Quotes.GetQuote("TSLA")
 	fmt.Println(util.Util.ToJsonReadable(q), err)
@@ -31,4 +31,3 @@ func main() {
 	a, err := Client.Acounts.GetAccountNumbers()
 	fmt.Println(util.Util.ToJsonReadable(a), err)
 }
-*/

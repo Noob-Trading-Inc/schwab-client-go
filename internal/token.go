@@ -74,6 +74,8 @@ func (c *token) GetToken() string {
 }
 
 func (c *token) LoadNewToken() error {
+	util.Util.Log("Getting New Token...")
+
 	// 1 : Start local call back Server
 	authCodeEncoded := ""
 	http.HandleFunc("/schwab/callback", func(w http.ResponseWriter, r *http.Request) {
@@ -99,6 +101,7 @@ func (c *token) LoadNewToken() error {
 }
 
 func (c *token) fetchTokens(payload string) error {
+	util.Util.Log("Refreshing Token...")
 	authHeader := fmt.Sprintf("Basic %s", base64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("%s:%s", clientID, clientSecret))))
 	req, err := http.NewRequest("POST", Endpoints.Token, bytes.NewBuffer([]byte(payload)))
 	if util.Util.OnError(err) != nil {
@@ -123,7 +126,7 @@ func (c *token) fetchTokens(payload string) error {
 	rt := &responseToken{}
 	util.Util.FromJson(response, rt)
 
-	c.RefreshTokenExpiry = time.Now().Add(time.Hour * 168)
+	c.RefreshTokenExpiry = time.Now().Add(time.Hour * 7 * 24)
 	c.BearerTokenExpiry = time.Now().Add(time.Duration(rt.ExpiresIn * int(time.Second)))
 	c.RefreshToken = rt.RefreshToken
 	c.BearerToken = rt.AccessToken

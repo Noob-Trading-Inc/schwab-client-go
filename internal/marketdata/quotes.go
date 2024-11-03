@@ -2,6 +2,7 @@ package marketdata
 
 import (
 	"fmt"
+	"net/url"
 	"schwab-client-go/internal"
 	"time"
 )
@@ -46,7 +47,7 @@ type Field_Quote struct {
 	BidTime                 float64
 	ClosePrice              float64
 	HighPrice               float64
-	LastMICId               float64
+	LastMICId               string
 	LastPrice               float64
 	LastSize                float64
 	LowPrice                float64
@@ -85,7 +86,7 @@ type Field_Regular struct {
 type Quotes struct{}
 
 func (c Quotes) GetQuote(symbol string) (rv map[string]Quote, err error) {
-	url := fmt.Sprintf("%s/%s/quotes?fields=all", internal.Endpoints.MarketData, symbol)
+	url := fmt.Sprintf("%s/%s/quotes?fields=all", internal.Endpoints.MarketData, url.QueryEscape(symbol))
 	err = internal.API.Execute(url, &rv)
 	return
 }
