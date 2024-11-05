@@ -28,6 +28,12 @@ func main() {
 	q, err := Client.Quotes.GetQuote("TSLA")
 	fmt.Println(util.Util.ToJsonReadable(q), err)
 
-	a, err := Client.Acounts.GetAccountNumbers()
+	an, err := Client.Acounts.GetAccountNumbers()
+	fmt.Println(util.Util.ToJsonReadable(an), err)
+
+	a, err := Client.Acounts.GetAccounts()
 	fmt.Println(util.Util.ToJsonReadable(a), err)
+
+	a1, err := Client.Acounts.GetAccount(an[0].HashValue)
+	fmt.Println(util.Util.ToJsonReadable(a1), err)
 }

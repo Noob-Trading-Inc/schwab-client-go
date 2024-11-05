@@ -1,7 +1,6 @@
 package internal
 
 import (
-	"fmt"
 	"io"
 	"net/http"
 	"schwab-client-go/util"
@@ -38,13 +37,10 @@ func (c *api) Execute(url string, response any) (err error) {
 		return
 	}
 
-	if res.StatusCode == 401 {
-		err = fmt.Errorf("401 Unauthorized")
-		return
-	}
 	responsestr := string(responseBytes)
 	if res.StatusCode < 200 || res.StatusCode > 299 {
-		err = fmt.Errorf(fmt.Sprintf("%d: %s", res.StatusCode, responsestr))
+		err = NewApiError(responsestr)
+		util.Util.OnError(err)
 		return
 	}
 
