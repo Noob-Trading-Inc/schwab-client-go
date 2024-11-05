@@ -13,7 +13,13 @@ import "time"
  */
 
 type Account struct {
-	SecuritiesAccount *SecuritiesAccount `json:"securitiesAccount,omitempty"`
+	SecuritiesAccount MarginAccount     `json:"securitiesAccount,omitempty"`
+	AggregatedBalance AggregatedBalance `json:"aggregatedBalance,omitempty"`
+}
+
+type AggregatedBalance struct {
+	CurrentLiquidationValue float64
+	LiquidationValue        float64
 }
 
 /*
@@ -362,7 +368,7 @@ type CashInitialBalance struct {
 	MutualFundValue            float64 `json:"mutualFundValue,omitempty"`
 	ShortOptionMarketValue     float64 `json:"shortOptionMarketValue,omitempty"`
 	ShortStockValue            float64 `json:"shortStockValue,omitempty"`
-	IsInCall                   float64 `json:"isInCall,omitempty"`
+	IsInCall                   bool    `json:"isInCall,omitempty"`
 	UnsettledCash              float64 `json:"unsettledCash,omitempty"`
 	CashDebitCallValue         float64 `json:"cashDebitCallValue,omitempty"`
 	PendingDeposits            float64 `json:"pendingDeposits,omitempty"`
@@ -778,7 +784,7 @@ type MarginBalance struct {
 	ShortBalance                     float64 `json:"shortBalance,omitempty"`
 	ShortMarginValue                 float64 `json:"shortMarginValue,omitempty"`
 	Sma                              float64 `json:"sma,omitempty"`
-	IsInCall                         float64 `json:"isInCall,omitempty"`
+	IsInCall                         bool    `json:"isInCall,omitempty"`
 	StockBuyingPower                 float64 `json:"stockBuyingPower,omitempty"`
 	OptionBuyingPower                float64 `json:"optionBuyingPower,omitempty"`
 }
@@ -821,7 +827,7 @@ type MarginInitialBalance struct {
 	ShortOptionMarketValue           float64 `json:"shortOptionMarketValue,omitempty"`
 	ShortStockValue                  float64 `json:"shortStockValue,omitempty"`
 	TotalCash                        float64 `json:"totalCash,omitempty"`
-	IsInCall                         float64 `json:"isInCall,omitempty"`
+	IsInCall                         bool    `json:"isInCall,omitempty"`
 	UnsettledCash                    float64 `json:"unsettledCash,omitempty"`
 	PendingDeposits                  float64 `json:"pendingDeposits,omitempty"`
 	MarginBalance                    float64 `json:"marginBalance,omitempty"`
