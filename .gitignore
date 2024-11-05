@@ -3,3 +3,6 @@ firebase-key.json
 go.sum
 data/*
 output/*
+*.crt
+*.key
+*.pem

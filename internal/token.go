@@ -82,7 +82,7 @@ func (c *token) LoadNewToken() error {
 		// Use the code to get a token.
 		authCodeEncoded = r.URL.Query().Get("code")
 	})
-	go http.ListenAndServe(":9999", nil)
+	go http.ListenAndServeTLS("127.0.0.1:9999", "ssl/localhost.crt", "ssl/localhost.key", nil)
 
 	// 2 : OAuth - Authorization Code
 	util.Util.OpenBrowser(fmt.Sprintf("%s?client_id=%s&redirect_uri=%s&scope=readonly&response_type=code", Endpoints.Auth, clientID, redirectURL))

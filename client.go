@@ -9,8 +9,10 @@ import (
 )
 
 type client struct {
-	Acounts trader.Accounts
-	Quotes  marketdata.Quotes
+	Acounts        trader.Accounts
+	UserPreference trader.UserPreference
+
+	Quotes marketdata.Quotes
 }
 
 var Client = &client{}
@@ -21,6 +23,7 @@ func (c *client) Init() {
 	util.Util.Log("Token : ", token)
 
 	c.Acounts = trader.Accounts{}
+	c.UserPreference = trader.UserPreference{}
 	c.Quotes = marketdata.Quotes{}
 }
 
@@ -36,4 +39,7 @@ func main() {
 
 	a1, err := Client.Acounts.GetAccount(an[0].HashValue)
 	fmt.Println(util.Util.ToJsonReadable(a1), err)
+
+	up, err := Client.UserPreference.GetUserPreference()
+	fmt.Println(util.Util.ToJsonReadable(up), err)
 }
