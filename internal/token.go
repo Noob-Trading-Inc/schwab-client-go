@@ -126,9 +126,11 @@ func (c *token) fetchTokens(payload string) error {
 	rt := &responseToken{}
 	util.Util.FromJson(response, rt)
 
-	c.RefreshTokenExpiry = time.Now().Add(time.Hour * 7 * 24)
+	if c.RefreshToken != rt.RefreshToken {
+		c.RefreshTokenExpiry = time.Now().Add(time.Hour * 7 * 24)
+		c.RefreshToken = rt.RefreshToken
+	}
 	c.BearerTokenExpiry = time.Now().Add(time.Duration(rt.ExpiresIn * int(time.Second)))
-	c.RefreshToken = rt.RefreshToken
 	c.BearerToken = rt.AccessToken
 
 	util.Util.ToFile(os.Getenv("schwab_tokenpath"), c)
