@@ -19,7 +19,7 @@ type Error struct {
 
 func NewApiError(errResponse string) (apierror ApiError) {
 	if strings.Trim(errResponse, "\n ") != "" {
-		util.Util.FromJson(errResponse, &apierror)
+		util.Deserialize(errResponse, &apierror)
 		apierror.JSon = errResponse
 	}
 	return

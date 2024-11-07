@@ -1,9 +1,12 @@
 package util
 
 import (
+	"crypto/sha1"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"log"
+	"math/rand"
 	"os"
 	"os/exec"
 	"runtime"
@@ -17,11 +20,7 @@ func init() {
 	godotenv.Load()
 }
 
-type util struct{}
-
-var Util = &util{}
-
-func (u *util) OpenBrowser(url string) error {
+func OpenBrowser(url string) error {
 	var err error
 	switch runtime.GOOS {
 	case "linux":
@@ -34,10 +33,10 @@ func (u *util) OpenBrowser(url string) error {
 		log.Fatalf("Unsupported platform.")
 	}
 
-	return u.OnError(err)
+	return OnError(err)
 }
 
-func (u *util) OnError(err error) error {
+func OnError(err error) error {
 	if err == nil {
 		return nil
 	}
@@ -46,55 +45,127 @@ func (u *util) OnError(err error) error {
 	return err
 }
 
-func (u *util) Log(param ...any) {
+func Log(param ...any) {
 	s := time.Now().Format("15:04 :")
 	for _, p := range param {
 		if str, ok := p.(string); ok {
 			s = s + " " + str
 		} else {
-			s = s + " " + u.ToJson(p)
+			s = s + " " + Serialize(p)
 		}
 	}
 
 	fmt.Println(s)
 }
 
-func (u *util) FromJson(input string, instance any) error {
+func Deserialize(input string, instance any) error {
 	err := json.Unmarshal([]byte(input), instance)
-	return u.OnError(err)
+	return OnError(err)
 }
 
-func (u *util) ToJson(param any) string {
+func Serialize(param any) string {
 	b, err := json.Marshal(param)
-	if u.OnError(err) != nil {
+	if OnError(err) != nil {
 		return ""
 	}
 	return string(b)
 }
 
-func (u *util) ToJsonReadable(param any) string {
+func SerializeReadable(param any) string {
 	b, err := json.MarshalIndent(param, "", "  ")
-	if u.OnError(err) != nil {
+	if OnError(err) != nil {
 		return ""
 	}
 	return string(b)
 }
 
-func (u *util) ToFile(path string, data any) error {
+func ToFile(path string, data any) error {
 	b, err := yaml.Marshal(data)
 	if err != nil {
-		return u.OnError(err)
+		return OnError(err)
 	}
 	err = os.WriteFile(path, b, 0644)
-	return u.OnError(err)
+	return OnError(err)
 }
 
-func (u *util) FromFile(path string, instance any) error {
+func FromFile(path string, instance any) error {
 	b, err := os.ReadFile(path)
 	if err != nil {
-		return u.OnError(err)
+		return OnError(err)
 	}
 
 	err = yaml.Unmarshal(b, instance)
-	return u.OnError(err)
+	return OnError(err)
+}
+
+func NewID() string {
+	return fmt.Sprintf("%s-%v-%v", time.Now().Format("2006-01-02"), time.Now().YearDay(), time.Now().UnixNano())
+}
+
+func Substring(input string, start, length int) string {
+	runes := []rune(input)
+	return string(runes[0:7])
+}
+
+func Hash(input string) string {
+	h := sha1.New()
+	h.Write([]byte(input))
+	return hex.EncodeToString(h.Sum(nil))
+}
+
+func randInt(min int, max int) int {
+	return min + rand.Intn(max-min)
+}
+
+func EpocToTime(epoc int64) time.Time {
+	return time.Unix(epoc/1000, 0)
+}
+
+func RandomPick(options []string) string {
+	if len(options) == 0 {
+		return ""
+	}
+
+	return options[randInt(0, len(options))]
+}
+
+func SliceContains(slice []string, item string) bool {
+	for _, a := range slice {
+		if a == item {
+			return true
+		}
+	}
+	return false
+}
+
+func SliceIndexOf(slice []string, item string) int {
+	i := 0
+	for _, a := range slice {
+		if a == item {
+			return i
+		}
+		i++
+	}
+	return -1
+}
+
+func SliceRemove(slice []string, index int) []string {
+	return append(slice[:index], slice[index+1:]...)
+}
+
+func SliceUnique(slice []string) []string {
+	keys := make(map[string]bool)
+	list := []string{}
+	for _, entry := range slice {
+		if _, value := keys[entry]; !value {
+			keys[entry] = true
+			list = append(list, entry)
+		}
+	}
+	return list
+}
+
+func Clone(instance interface{}, copy interface{}) error {
+	b, _ := json.Marshal(instance)
+	return json.Unmarshal(b, copy)
 }

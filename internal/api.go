@@ -14,7 +14,7 @@ func (c *api) Execute(url string, response any) (err error) {
 	var req *http.Request
 	req, err = http.NewRequest("GET", url, nil)
 	if err != nil {
-		util.Util.OnError(err)
+		util.OnError(err)
 		return
 	}
 
@@ -27,23 +27,23 @@ func (c *api) Execute(url string, response any) (err error) {
 	httpclient := http.Client{}
 	res, err = httpclient.Do(req)
 	if err != nil {
-		util.Util.OnError(err)
+		util.OnError(err)
 		return
 	}
 	defer res.Body.Close()
 	responseBytes, err := io.ReadAll(res.Body)
 	if err != nil {
-		util.Util.OnError(err)
+		util.OnError(err)
 		return
 	}
 
 	responsestr := string(responseBytes)
 	if res.StatusCode < 200 || res.StatusCode > 299 {
 		err = NewApiError(responsestr)
-		util.Util.OnError(err)
+		util.OnError(err)
 		return
 	}
 
-	util.Util.FromJson(responsestr, response)
+	util.Deserialize(responsestr, response)
 	return
 }

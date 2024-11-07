@@ -8,8 +8,8 @@ import (
 
 func Test_Simple(t *testing.T) {
 	q, err := Client.Quotes.GetQuote("TSLA")
-	fmt.Println(util.Util.ToJsonReadable(q), err)
+	fmt.Println(util.SerializeReadable(q), err)
 
 	a, err := Client.Acounts.GetAccountNumbers()
-	fmt.Println(util.Util.ToJsonReadable(a), err)
+	fmt.Println(util.SerializeReadable(a), err)
 }

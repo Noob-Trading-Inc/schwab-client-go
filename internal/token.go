@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"net/url"
 	"os"
@@ -51,12 +52,12 @@ func (c *token) GetToken() string {
 	clientSecret = os.Getenv("schwab_secret")
 	redirectURL = os.Getenv("schwab_redirecturl")
 
-	err := util.Util.FromFile(os.Getenv("schwab_tokenpath"), c)
+	err := util.FromFile(os.Getenv("schwab_tokenpath"), c)
 	if err != nil || c.BearerToken == "" || time.Now().After(c.RefreshTokenExpiry) {
 		err = c.LoadNewToken()
 
 		if err != nil {
-			util.Util.OnError(err)
+			util.OnError(err)
 			return ""
 		}
 	}
@@ -65,16 +66,20 @@ func (c *token) GetToken() string {
 		payload := fmt.Sprintf("grant_type=refresh_token&client_id=%s&client_secret=%s&refresh_token=%s", clientID, clientSecret, c.RefreshToken)
 		err = c.fetchTokens(payload)
 		if err != nil {
-			util.Util.OnError(err)
+			util.OnError(err)
 			return ""
 		}
+	}
+
+	if time.Now().After(c.RefreshTokenExpiry) {
+		log.Fatal("Refresh Token Expired, get new token")
 	}
 
 	return c.BearerToken
 }
 
 func (c *token) LoadNewToken() error {
-	util.Util.Log("Getting New Token...")
+	util.Log("Getting New Token...")
 
 	// 1 : Start local call back Server
 	authCodeEncoded := ""
@@ -85,13 +90,13 @@ func (c *token) LoadNewToken() error {
 	go http.ListenAndServeTLS("127.0.0.1:9999", "ssl/localhost.crt", "ssl/localhost.key", nil)
 
 	// 2 : OAuth - Authorization Code
-	util.Util.OpenBrowser(fmt.Sprintf("%s?client_id=%s&redirect_uri=%s&scope=readonly&response_type=code", Endpoints.Auth, clientID, redirectURL))
-	util.Util.Log("Waiting fot Auth Code...")
+	util.OpenBrowser(fmt.Sprintf("%s?client_id=%s&redirect_uri=%s&scope=readonly&response_type=code", Endpoints.Auth, clientID, redirectURL))
+	util.Log("Waiting fot Auth Code...")
 	for authCodeEncoded == "" {
 		time.Sleep(1 * time.Second)
 	}
 	authCode, err := url.QueryUnescape(authCodeEncoded)
-	if util.Util.OnError(err) != nil {
+	if util.OnError(err) != nil {
 		return err
 	}
 
@@ -101,10 +106,10 @@ func (c *token) LoadNewToken() error {
 }
 
 func (c *token) fetchTokens(payload string) error {
-	util.Util.Log("Refreshing Token...")
+	util.Log("Refreshing Token...")
 	authHeader := fmt.Sprintf("Basic %s", base64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("%s:%s", clientID, clientSecret))))
 	req, err := http.NewRequest("POST", Endpoints.Token, bytes.NewBuffer([]byte(payload)))
-	if util.Util.OnError(err) != nil {
+	if util.OnError(err) != nil {
 		return err
 	}
 	req.Header = http.Header{
@@ -114,17 +119,17 @@ func (c *token) fetchTokens(payload string) error {
 
 	httpclient := http.Client{}
 	res, err := httpclient.Do(req)
-	if util.Util.OnError(err) != nil {
+	if util.OnError(err) != nil {
 		return err
 	}
 	defer res.Body.Close()
 	responseBytes, err := io.ReadAll(res.Body)
-	if util.Util.OnError(err) != nil {
+	if util.OnError(err) != nil {
 		return err
 	}
 	response := string(responseBytes)
 	rt := &responseToken{}
-	util.Util.FromJson(response, rt)
+	util.Deserialize(response, rt)
 
 	if c.RefreshToken != rt.RefreshToken {
 		c.RefreshTokenExpiry = time.Now().Add(time.Hour * 7 * 24)
@@ -133,7 +138,7 @@ func (c *token) fetchTokens(payload string) error {
 	c.BearerTokenExpiry = time.Now().Add(time.Duration(rt.ExpiresIn * int(time.Second)))
 	c.BearerToken = rt.AccessToken
 
-	util.Util.ToFile(os.Getenv("schwab_tokenpath"), c)
+	util.ToFile(os.Getenv("schwab_tokenpath"), c)
 
 	return nil
 }
