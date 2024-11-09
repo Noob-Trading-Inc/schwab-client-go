@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"math"
 	"os"
 	"os/signal"
 	"schwab-client-go/internal"
@@ -73,21 +74,39 @@ func main() {
 	//Client.Stream.EnableLogging()
 	Client.Stream.Init(up)
 
+	var NQPrice float64
 	go Client.Stream.GetFuturesSub("/NQ", func(err error, quote *model.TDWSResponse_L1_Content_Futures) {
 		if err != nil {
 			util.Log("ERROR Futures L1, %s", err.Error())
 			return
 		}
 		util.Log(util.Serialize(quote))
+		if NQPrice == 0 {
+			NQPrice = quote.Mark
+		}
 	})
-	go Client.Stream.GetFuturesSub("/ES", func(err error, quote *model.TDWSResponse_L1_Content_Futures) {
+
+	for NQPrice == 0 {
+		time.Sleep(10 * time.Millisecond)
+	}
+	NQPutPrice := fmt.Sprintf("%.0f", (math.Round(NQPrice/100)*100)-100)
+	NQCallPrice := fmt.Sprintf("%.0f", (math.Round(NQPrice/100)*100)+100)
+	go Client.Stream.GetFuturesOptionSub("./QN2X24C"+NQPutPrice, func(err error, quote *model.TDWSResponse_L1_Content_FuturesOption) {
 		if err != nil {
 			util.Log("ERROR Futures L1, %s", err.Error())
 			return
 		}
 		util.Log(util.Serialize(quote))
 	})
-	go Client.Stream.GetFuturesSub("/SI", func(err error, quote *model.TDWSResponse_L1_Content_Futures) {
+	go Client.Stream.GetFuturesOptionSub("./QN2X24C"+NQCallPrice, func(err error, quote *model.TDWSResponse_L1_Content_FuturesOption) {
+		if err != nil {
+			util.Log("ERROR Futures L1, %s", err.Error())
+			return
+		}
+		util.Log(util.Serialize(quote))
+	})
+
+	go Client.Stream.GetFuturesSub("/ES", func(err error, quote *model.TDWSResponse_L1_Content_Futures) {
 		if err != nil {
 			util.Log("ERROR Futures L1, %s", err.Error())
 			return

@@ -7,6 +7,7 @@ import (
 	"schwab-client-go/internal/stream/model"
 	"schwab-client-go/util"
 	"strings"
+	"sync"
 	"time"
 
 	tmodel "schwab-client-go/internal/trader/model"
@@ -24,6 +25,8 @@ type TDStream struct {
 	requestidindex   int64
 	requestqueue     map[string]TDStreamOnResponseFunc
 	requestqueuesent map[string]model.TDWSRequest
+	data             map[string]any
+	dataLock         sync.RWMutex
 
 	OnResponse   func(message string)
 	OnError      func(err error)
@@ -44,6 +47,8 @@ func (t *TDStream) Init(userpref tmodel.UserPreference) {
 	t.requestidindex = 0
 	t.requestqueue = make(map[string]TDStreamOnResponseFunc)
 	t.requestqueuesent = make(map[string]model.TDWSRequest)
+	t.data = make(map[string]any)
+	t.dataLock = sync.RWMutex{}
 	t.user = userpref
 
 	t.login()
@@ -322,8 +327,6 @@ func (t *TDStream) GetFuturesOptionBook(symbol string) (error, string) {
 	return nil, util.Serialize(rv)
 }
 
-var subscriptionQueue map[string]func(err error, quote interface{})
-
 func (t *TDStream) getSubscriptionCommand() string {
 	return "ADD"
 }
@@ -332,7 +335,7 @@ func (t *TDStream) getSubscription(
 	service string,
 	symbol string,
 	fields string,
-	onmessage func(err error, quote interface{})) {
+	onmessage func(err error, quote string)) {
 	req := model.TDWSRequest{
 		Service: service,
 		Command: t.getSubscriptionCommand(),
@@ -354,41 +357,49 @@ func (t *TDStream) getSubscription(
 		err := json.Unmarshal(b, &resp)
 
 		if err != nil {
-			for _, onmessage := range subscriptionQueue {
-				onmessage(err, nil)
-			}
+			onmessage(err, "")
 			return
 		}
 
-		onmessage(nil, &resp)
+		onmessage(nil, message)
 	})
 }
 
 func (t *TDStream) GetFuturesSub(symbol string, onmessage func(err error, quote *model.TDWSResponse_L1_Content_Futures)) {
+	t.dataLock.Lock()
+	t.data[symbol] = &model.TDWSResponse_L1_Content_Futures{}
+	t.dataLock.Unlock()
 	t.getSubscription(
 		"LEVELONE_FUTURES",
 		symbol,
 		t.numberCSV(40),
-		func(err error, quote interface{}) {
-			var rv model.TDWSResponse_L1_Content_Futures
-			if quote != nil {
-				util.Clone(quote, &rv)
-			}
-			onmessage(err, &rv)
+		func(err error, quote string) {
+			t.dataLock.Lock()
+			util.Deserialize(quote, t.data[symbol])
+			t.dataLock.Unlock()
+
+			t.dataLock.RLock()
+			onmessage(err, t.data[symbol].(*model.TDWSResponse_L1_Content_Futures))
+			t.dataLock.RUnlock()
 		})
 }
 
 func (t *TDStream) GetFuturesOptionSub(symbol string, onmessage func(err error, quote *model.TDWSResponse_L1_Content_FuturesOption)) {
+	t.dataLock.Lock()
+	t.data[symbol] = &model.TDWSResponse_L1_Content_FuturesOption{}
+	t.dataLock.Unlock()
 	t.getSubscription(
 		"LEVELONE_FUTURES_OPTIONS",
 		symbol,
-		t.numberCSV(35),
-		func(err error, quote interface{}) {
-			var rv model.TDWSResponse_L1_Content_FuturesOption
-			if quote != nil {
-				util.Clone(quote, &rv)
-			}
-			onmessage(err, &rv)
+		t.numberCSV(31),
+		func(err error, quote string) {
+			t.dataLock.Lock()
+			util.Deserialize(quote, t.data[symbol])
+			t.dataLock.Unlock()
+
+			t.dataLock.RLock()
+			onmessage(err, t.data[symbol].(*model.TDWSResponse_L1_Content_FuturesOption))
+			t.dataLock.RUnlock()
 		})
 }
 
