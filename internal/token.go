@@ -9,8 +9,9 @@ import (
 	"net/http"
 	"net/url"
 	"os"
-	"schwab-client-go/util"
 	"time"
+
+	"github.com/Noob-Trading-Inc/schwab-client-go/util"
 )
 
 var (

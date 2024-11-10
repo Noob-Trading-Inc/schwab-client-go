@@ -3,7 +3,8 @@ package internal
 import (
 	"io"
 	"net/http"
-	"schwab-client-go/util"
+
+	"github.com/Noob-Trading-Inc/schwab-client-go/util"
 )
 
 type api struct{}

@@ -1,8 +1,9 @@
 package internal
 
 import (
-	"schwab-client-go/util"
 	"strings"
+
+	"github.com/Noob-Trading-Inc/schwab-client-go/util"
 )
 
 type ApiError struct {

@@ -5,13 +5,14 @@ import (
 	"math"
 	"os"
 	"os/signal"
-	"schwab-client-go/internal"
-	"schwab-client-go/internal/marketdata"
-	"schwab-client-go/internal/stream"
-	"schwab-client-go/internal/stream/model"
-	"schwab-client-go/internal/trader"
-	"schwab-client-go/util"
 	"time"
+
+	"github.com/Noob-Trading-Inc/schwab-client-go/internal"
+	"github.com/Noob-Trading-Inc/schwab-client-go/internal/marketdata"
+	"github.com/Noob-Trading-Inc/schwab-client-go/internal/stream"
+	"github.com/Noob-Trading-Inc/schwab-client-go/internal/stream/model"
+	"github.com/Noob-Trading-Inc/schwab-client-go/internal/trader"
+	"github.com/Noob-Trading-Inc/schwab-client-go/util"
 )
 
 type client struct {

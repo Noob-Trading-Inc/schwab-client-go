@@ -2,7 +2,8 @@ package trader
 
 import (
 	"fmt"
-	"schwab-client-go/internal"
+
+	"github.com/Noob-Trading-Inc/schwab-client-go/internal"
 )
 
 type Order struct {

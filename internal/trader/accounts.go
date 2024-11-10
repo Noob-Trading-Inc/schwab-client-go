@@ -2,8 +2,10 @@ package trader
 
 import (
 	"fmt"
-	"schwab-client-go/internal"
-	"schwab-client-go/internal/trader/model"
+
+	"github.com/Noob-Trading-Inc/schwab-client-go/internal"
+
+	"github.com/Noob-Trading-Inc/schwab-client-go/internal/trader/model"
 )
 
 type Accounts struct {

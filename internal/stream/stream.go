@@ -3,15 +3,15 @@ package stream
 import (
 	"encoding/json"
 	"fmt"
-	"schwab-client-go/internal"
-	"schwab-client-go/internal/stream/model"
-	"schwab-client-go/util"
 	"strings"
 	"sync"
 	"time"
 
-	tmodel "schwab-client-go/internal/trader/model"
+	tmodel "github.com/Noob-Trading-Inc/schwab-client-go/internal/trader/model"
 
+	"github.com/Noob-Trading-Inc/schwab-client-go/internal"
+	"github.com/Noob-Trading-Inc/schwab-client-go/internal/stream/model"
+	"github.com/Noob-Trading-Inc/schwab-client-go/util"
 	"github.com/sacOO7/gowebsocket"
 )
 

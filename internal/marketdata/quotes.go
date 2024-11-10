@@ -3,8 +3,9 @@ package marketdata
 import (
 	"fmt"
 	"net/url"
-	"schwab-client-go/internal"
-	"schwab-client-go/internal/marketdata/model"
+
+	"github.com/Noob-Trading-Inc/schwab-client-go/internal"
+	"github.com/Noob-Trading-Inc/schwab-client-go/internal/marketdata/model"
 )
 
 type Quotes struct{}

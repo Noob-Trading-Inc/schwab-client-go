@@ -1,4 +1,4 @@
-module schwab-client-go
+module github.com/Noob-Trading-Inc/schwab-client-go
 
 go 1.22.4
 
