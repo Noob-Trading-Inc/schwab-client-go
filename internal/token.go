@@ -34,6 +34,8 @@ type token struct {
 	BearerTokenExpiry  time.Time
 	RefreshToken       string
 	RefreshTokenExpiry time.Time
+
+	externalRefreshToken bool
 }
 
 var Token = &token{}
@@ -49,6 +51,7 @@ func (c *token) GetTokenForHeader() string {
 }
 
 func (c *token) SetRefreshToken(token string, expiresat time.Time) {
+	c.externalRefreshToken = true
 	c.RefreshToken = token
 	c.RefreshTokenExpiry = expiresat
 	util.ToFile(os.Getenv("schwab_tokenpath"), c)
@@ -60,7 +63,7 @@ func (c *token) GetToken() string {
 	redirectURL = os.Getenv("schwab_redirecturl")
 
 	err := util.FromFile(os.Getenv("schwab_tokenpath"), c)
-	if err != nil || c.BearerToken == "" || time.Now().After(c.RefreshTokenExpiry) {
+	if err != nil || time.Now().After(c.RefreshTokenExpiry) || (c.BearerToken == "" && time.Now().After(c.RefreshTokenExpiry)) {
 		err = c.LoadNewToken()
 
 		if err != nil {
@@ -86,6 +89,13 @@ func (c *token) GetToken() string {
 }
 
 func (c *token) LoadNewToken() error {
+	if c.externalRefreshToken {
+		if time.Now().After(c.RefreshTokenExpiry) {
+			return fmt.Errorf("External RefreshToken Expired")
+		}
+		return fmt.Errorf("Invalid External RefreshToken")
+	}
+
 	util.Log("Getting New Token...")
 
 	// 1 : Start local call back Server
