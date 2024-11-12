@@ -102,6 +102,8 @@ func (c *client) StreamQuotes(symbols []string, callback func(*models.Quote) err
 					AskPrice:    quote.AskPrice,
 					BidPrice:    quote.BidPrice,
 					MarketPrice: quote.Mark,
+
+					QuoteTimeInLong: quote.QuoteTime,
 				})
 			})
 			continue
@@ -127,6 +129,8 @@ func (c *client) StreamQuotes(symbols []string, callback func(*models.Quote) err
 
 				FiftyTwoWeekHigh: quote.FiftyTwoWeekHigh,
 				FiftyTwoWeekLow:  quote.FiftyTwoWeekLow,
+
+				QuoteTimeInLong: quote.QuoteTimeInLong,
 			})
 		})
 	}
