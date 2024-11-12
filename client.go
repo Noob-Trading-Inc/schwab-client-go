@@ -85,7 +85,7 @@ func (c *client) StreamQuotes(symbols []string, callback func(*models.Quote) err
 		}
 
 		if symbol[0:1] == "/" {
-			go Client.Stream.Subscribe_L1_Futures(symbol, func(err error, quote *model.TDWSResponse_L1_Content_Futures) {
+			Client.Stream.Subscribe_L1_Futures(symbol, func(err error, quote *model.TDWSResponse_L1_Content_Futures) {
 				if err != nil {
 					util.Log("ERROR Futures L1, %s", err.Error())
 					return
@@ -107,9 +107,9 @@ func (c *client) StreamQuotes(symbols []string, callback func(*models.Quote) err
 			continue
 		}
 
-		go Client.Stream.Subscribe_L1_Equity(symbol, func(err error, quote *model.TDWSResponse_L1_Content_Equity) {
+		Client.Stream.Subscribe_L1_Equity(symbol, func(err error, quote *model.TDWSResponse_L1_Content_Equity) {
 			if err != nil {
-				util.Log("ERROR Futures L1, %s", err.Error())
+				util.Log("ERROR Equity L1, %s", err.Error())
 				return
 			}
 			util.Serialize(quote)
