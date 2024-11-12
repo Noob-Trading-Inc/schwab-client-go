@@ -15,5 +15,7 @@ type Quote struct {
 	FiftyTwoWeekHigh float64 `json:"52WeekHigh,omitempty"`
 	FiftyTwoWeekLow  float64 `json:"52WeekLow,omitempty"`
 
-	QuoteTimeInLong int64 `json:"quoteTimeInLong,omitempty"`
+	QuoteTimeInLong  int64   `json:"quoteTimeInLong,omitempty"`
+	TotalVolume      float64 `json:"totalVolume,omitempty"`
+	NetPercentChange float64 `json:"netPercentChange,omitempty"`
 }
