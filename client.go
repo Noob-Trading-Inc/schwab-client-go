@@ -25,15 +25,20 @@ type client struct {
 
 var Client = &client{}
 
-func (c *client) InitWithRefreshToken(token string, expiresat time.Time) {
+func (c *client) InitWithRefreshToken(token string, expiresat time.Time) (err error) {
 	internal.Token.SetRefreshToken(token, expiresat)
-	c.Init()
+	err = c.Init()
+	return
 }
 
-func (c *client) Init() {
+func (c *client) Init() (err error) {
 	util.Log("Initializing")
 	token := internal.Token.GetToken()
-	util.Log("Token : ", token)
+	if token == "" {
+		err = fmt.Errorf("Empty accesstoken")
+		return
+	}
+	util.Logf("Token : %s....", token[0:5])
 
 	c.Acounts = trader.Accounts{}
 	c.UserPreference = trader.UserPreference{}
@@ -51,6 +56,7 @@ func (c *client) Init() {
 			}
 		}
 	}()
+	return
 }
 
 func (c *client) Shutdown() {

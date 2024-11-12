@@ -58,6 +58,12 @@ func Log(param ...any) {
 	fmt.Println(s)
 }
 
+func Logf(message string, param ...any) {
+	message = fmt.Sprintf(message, param...)
+	message = time.Now().Format("15:04 :") + message
+	fmt.Println(message)
+}
+
 func Deserialize(input string, instance any) error {
 	err := json.Unmarshal([]byte(input), instance)
 	return OnError(err)
