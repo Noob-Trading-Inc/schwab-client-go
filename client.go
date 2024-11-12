@@ -32,7 +32,7 @@ func (c *client) InitWithRefreshToken(token string, expiresat time.Time) (err er
 }
 
 func (c *client) Init() (err error) {
-	util.Log("Initializing")
+	util.Log("Initializing schwab-client-go")
 	token := internal.Token.GetToken()
 	if token == "" {
 		err = fmt.Errorf("Empty accesstoken")

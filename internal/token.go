@@ -18,6 +18,7 @@ var (
 	clientID     = ""
 	clientSecret = ""
 	redirectURL  = ""
+	tokenPath    = ""
 )
 
 type responseToken struct {
@@ -40,8 +41,19 @@ type token struct {
 
 var Token = &token{}
 
+func (c *token) init() {
+	if clientID == "" {
+		clientID = os.Getenv("schwab_appkey")
+		clientSecret = os.Getenv("schwab_secret")
+		redirectURL = os.Getenv("schwab_redirecturl")
+		tokenPath = os.Getenv("schwab_tokenpath")
+	}
+}
+
 func (c *token) Reset() {
-	os.Remove(os.Getenv("schwab_tokenpath"))
+	c.init()
+
+	os.Remove(tokenPath)
 	c.BearerToken = ""
 	c.RefreshToken = ""
 }
@@ -51,18 +63,18 @@ func (c *token) GetTokenForHeader() string {
 }
 
 func (c *token) SetRefreshToken(token string, expiresat time.Time) {
+	c.init()
+
 	c.externalRefreshToken = true
 	c.RefreshToken = token
 	c.RefreshTokenExpiry = expiresat
-	util.ToFile(os.Getenv("schwab_tokenpath"), c)
+	util.ToFile(tokenPath, c)
 }
 
 func (c *token) GetToken() string {
-	clientID = os.Getenv("schwab_appkey")
-	clientSecret = os.Getenv("schwab_secret")
-	redirectURL = os.Getenv("schwab_redirecturl")
+	c.init()
 
-	err := util.FromFile(os.Getenv("schwab_tokenpath"), c)
+	err := util.FromFile(tokenPath, c)
 	if err != nil || time.Now().After(c.RefreshTokenExpiry) || (c.BearerToken == "" && time.Now().After(c.RefreshTokenExpiry)) {
 		err = c.LoadNewToken()
 
@@ -155,7 +167,7 @@ func (c *token) fetchTokens(payload string) error {
 	c.BearerTokenExpiry = time.Now().Add(time.Duration(rt.ExpiresIn * int(time.Second)))
 	c.BearerToken = rt.AccessToken
 
-	util.ToFile(os.Getenv("schwab_tokenpath"), c)
+	util.ToFile(tokenPath, c)
 
 	return nil
 }

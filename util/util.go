@@ -60,7 +60,7 @@ func Log(param ...any) {
 
 func Logf(message string, param ...any) {
 	message = fmt.Sprintf(message, param...)
-	message = time.Now().Format("15:04 :") + message
+	message = time.Now().Format("15:04 : ") + message
 	fmt.Println(message)
 }
 
