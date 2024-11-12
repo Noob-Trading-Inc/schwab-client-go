@@ -17,5 +17,6 @@ type Quote struct {
 
 	QuoteTimeInLong  int64   `json:"quoteTimeInLong,omitempty"`
 	TotalVolume      float64 `json:"totalVolume,omitempty"`
+	NetChange        float64 `json:"netChange,omitempty"`
 	NetPercentChange float64 `json:"netPercentChange,omitempty"`
 }

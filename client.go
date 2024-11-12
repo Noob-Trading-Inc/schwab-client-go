@@ -105,6 +105,7 @@ func (c *client) StreamQuotes(symbols []string, callback func(*models.Quote) err
 
 					QuoteTimeInLong:  quote.QuoteTime,
 					TotalVolume:      quote.TotalVolume,
+					NetChange:        quote.NetChange,
 					NetPercentChange: quote.FuturePercentChange,
 				})
 			})
@@ -134,6 +135,7 @@ func (c *client) StreamQuotes(symbols []string, callback func(*models.Quote) err
 
 				QuoteTimeInLong:  quote.QuoteTimeInLong,
 				TotalVolume:      quote.TotalVolume,
+				NetChange:        quote.NetChange,
 				NetPercentChange: quote.NetPercentChange,
 			})
 		})
