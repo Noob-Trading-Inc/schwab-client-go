@@ -1,6 +1,8 @@
 package models
 
 type Quote struct {
+	Symbol string `json:"symbol,omitempty"`
+
 	Open  float64 `json:"open,omitempty"`
 	Close float64 `json:"close,omitempty"`
 	High  float64 `json:"high,omitempty"`

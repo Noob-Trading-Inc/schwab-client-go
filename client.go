@@ -92,6 +92,8 @@ func (c *client) StreamQuotes(symbols []string, callback func(*models.Quote) err
 				}
 				util.Serialize(quote)
 				callback(&models.Quote{
+					Symbol: quote.Symbol,
+
 					Open:  quote.OpenPrice,
 					Close: quote.OpenPrice,
 					High:  quote.HighPrice,
@@ -112,6 +114,8 @@ func (c *client) StreamQuotes(symbols []string, callback func(*models.Quote) err
 			}
 			util.Serialize(quote)
 			callback(&models.Quote{
+				Symbol: quote.Symbol,
+
 				Open:  quote.OpenPrice,
 				Close: quote.OpenPrice,
 				High:  quote.HighPrice,
