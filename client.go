@@ -25,6 +25,11 @@ type client struct {
 
 var Client = &client{}
 
+func (c *client) InitWithRefreshToken(token string, expiresat time.Time) {
+	internal.Token.SetRefreshToken(token, expiresat)
+	c.Init()
+}
+
 func (c *client) Init() {
 	util.Log("Initializing")
 	token := internal.Token.GetToken()
@@ -55,12 +60,12 @@ func (c *client) Shutdown() {
 var stop bool = false
 
 func main() {
+
+	an, err := Client.Acounts.GetAccountNumbers()
+	fmt.Println(util.SerializeReadable(an), err)
 	/*
 		q, err := Client.Quotes.GetQuote("TSLA")
 		fmt.Println(util.SerializeReadable(q), err)
-
-		an, err := Client.Acounts.GetAccountNumbers()
-		fmt.Println(util.SerializeReadable(an), err)
 
 		a, err := Client.Acounts.GetAccounts()
 		fmt.Println(util.SerializeReadable(a), err)

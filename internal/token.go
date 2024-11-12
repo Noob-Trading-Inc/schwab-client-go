@@ -48,6 +48,12 @@ func (c *token) GetTokenForHeader() string {
 	return "Bearer " + c.GetToken()
 }
 
+func (c *token) SetRefreshToken(token string, expiresat time.Time) {
+	c.RefreshToken = token
+	c.RefreshTokenExpiry = expiresat
+	util.ToFile(os.Getenv("schwab_tokenpath"), c)
+}
+
 func (c *token) GetToken() string {
 	clientID = os.Getenv("schwab_appkey")
 	clientSecret = os.Getenv("schwab_secret")
