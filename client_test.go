@@ -1,9 +1,10 @@
-package main
+package schwab
 
 import (
 	"fmt"
-	"schwab-client-go/util"
 	"testing"
+
+	"github.com/Noob-Trading-Inc/schwab-client-go/util"
 )
 
 func Test_Simple(t *testing.T) {
