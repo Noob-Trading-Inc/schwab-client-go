@@ -365,7 +365,26 @@ func (t *TDStream) getSubscription(
 	})
 }
 
-func (t *TDStream) GetFuturesSub(symbol string, onmessage func(err error, quote *model.TDWSResponse_L1_Content_Futures)) {
+func (t *TDStream) Subscribe_L1_Equity(symbol string, onmessage func(err error, quote *model.TDWSResponse_L1_Content_Equity)) {
+	t.dataLock.Lock()
+	t.data[symbol] = &model.TDWSResponse_L1_Content_Equity{}
+	t.dataLock.Unlock()
+	t.getSubscription(
+		"LEVELONE_EQUITIES",
+		symbol,
+		t.numberCSV(40),
+		func(err error, quote string) {
+			t.dataLock.Lock()
+			util.Deserialize(quote, t.data[symbol])
+			t.dataLock.Unlock()
+
+			t.dataLock.RLock()
+			onmessage(err, t.data[symbol].(*model.TDWSResponse_L1_Content_Equity))
+			t.dataLock.RUnlock()
+		})
+}
+
+func (t *TDStream) Subscribe_L1_Futures(symbol string, onmessage func(err error, quote *model.TDWSResponse_L1_Content_Futures)) {
 	t.dataLock.Lock()
 	t.data[symbol] = &model.TDWSResponse_L1_Content_Futures{}
 	t.dataLock.Unlock()
@@ -384,7 +403,7 @@ func (t *TDStream) GetFuturesSub(symbol string, onmessage func(err error, quote 
 		})
 }
 
-func (t *TDStream) GetFuturesOptionSub(symbol string, onmessage func(err error, quote *model.TDWSResponse_L1_Content_FuturesOption)) {
+func (t *TDStream) Subscribe_L1_FuturesOptions(symbol string, onmessage func(err error, quote *model.TDWSResponse_L1_Content_FuturesOption)) {
 	t.dataLock.Lock()
 	t.data[symbol] = &model.TDWSResponse_L1_Content_FuturesOption{}
 	t.dataLock.Unlock()

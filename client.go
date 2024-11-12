@@ -2,9 +2,9 @@ package schwab
 
 import (
 	"fmt"
-	"math"
 	"os"
 	"os/signal"
+	"sync"
 	"time"
 
 	"github.com/Noob-Trading-Inc/schwab-client-go/internal"
@@ -12,6 +12,7 @@ import (
 	"github.com/Noob-Trading-Inc/schwab-client-go/internal/stream"
 	"github.com/Noob-Trading-Inc/schwab-client-go/internal/stream/model"
 	"github.com/Noob-Trading-Inc/schwab-client-go/internal/trader"
+	"github.com/Noob-Trading-Inc/schwab-client-go/models"
 	"github.com/Noob-Trading-Inc/schwab-client-go/util"
 )
 
@@ -60,73 +61,71 @@ func (c *client) Init() (err error) {
 }
 
 func (c *client) Shutdown() {
-	stop = true
+	Client.Stream.Dispose()
 }
 
-var stop bool = false
+var isStreamInitiated bool
+var isStreamInitiatedLock = sync.RWMutex{}
 
-func main() {
-
-	an, err := Client.Acounts.GetAccountNumbers()
-	fmt.Println(util.SerializeReadable(an), err)
-	/*
-		q, err := Client.Quotes.GetQuote("TSLA")
-		fmt.Println(util.SerializeReadable(q), err)
-
-		a, err := Client.Acounts.GetAccounts()
-		fmt.Println(util.SerializeReadable(a), err)
-
-		a1, err := Client.Acounts.GetAccount(an[0].HashValue)
-		fmt.Println(util.SerializeReadable(a1), err)
-	*/
-
-	up, err := Client.UserPreference.GetUserPreference()
-	fmt.Println(util.SerializeReadable(up), err)
-
-	//Client.Stream.EnableLogging()
-	Client.Stream.Init(up)
-
-	var NQPrice float64
-	go Client.Stream.GetFuturesSub("/NQ", func(err error, quote *model.TDWSResponse_L1_Content_Futures) {
-		if err != nil {
-			util.Log("ERROR Futures L1, %s", err.Error())
-			return
+func (c *client) StreamQuotes(symbols []string, callback func(*models.Quote) error) error {
+	if !isStreamInitiated {
+		isStreamInitiatedLock.Lock()
+		if !isStreamInitiated {
+			up, err := Client.UserPreference.GetUserPreference()
+			if err != nil {
+				return util.OnError(err)
+			}
+			Client.Stream.Init(up)
 		}
-		util.Log(util.Serialize(quote))
-		if NQPrice == 0 {
-			NQPrice = quote.Mark
-		}
-	})
-
-	for NQPrice == 0 {
-		time.Sleep(10 * time.Millisecond)
 	}
-	NQPutPrice := fmt.Sprintf("%.0f", (math.Round(NQPrice/100)*100)-100)
-	NQCallPrice := fmt.Sprintf("%.0f", (math.Round(NQPrice/100)*100)+100)
-	go Client.Stream.GetFuturesOptionSub("./QN2X24C"+NQPutPrice, func(err error, quote *model.TDWSResponse_L1_Content_FuturesOption) {
-		if err != nil {
-			util.Log("ERROR Futures L1, %s", err.Error())
-			return
-		}
-		util.Log(util.Serialize(quote))
-	})
-	go Client.Stream.GetFuturesOptionSub("./QN2X24C"+NQCallPrice, func(err error, quote *model.TDWSResponse_L1_Content_FuturesOption) {
-		if err != nil {
-			util.Log("ERROR Futures L1, %s", err.Error())
-			return
-		}
-		util.Log(util.Serialize(quote))
-	})
 
-	go Client.Stream.GetFuturesSub("/ES", func(err error, quote *model.TDWSResponse_L1_Content_Futures) {
-		if err != nil {
-			util.Log("ERROR Futures L1, %s", err.Error())
-			return
+	for _, symbol := range symbols {
+		if symbol == "" {
+			continue
 		}
-		util.Log(util.Serialize(quote))
-	})
 
-	for !stop {
-		time.Sleep(1000 * time.Millisecond)
+		if symbol[0:1] == "/" {
+			go Client.Stream.Subscribe_L1_Futures(symbol, func(err error, quote *model.TDWSResponse_L1_Content_Futures) {
+				if err != nil {
+					util.Log("ERROR Futures L1, %s", err.Error())
+					return
+				}
+				util.Serialize(quote)
+				callback(&models.Quote{
+					Open:  quote.OpenPrice,
+					Close: quote.OpenPrice,
+					High:  quote.HighPrice,
+					Low:   quote.LowPrice,
+
+					AskPrice:    quote.AskPrice,
+					BidPrice:    quote.BidPrice,
+					MarketPrice: quote.Mark,
+				})
+			})
+			continue
+		}
+
+		go Client.Stream.Subscribe_L1_Equity(symbol, func(err error, quote *model.TDWSResponse_L1_Content_Equity) {
+			if err != nil {
+				util.Log("ERROR Futures L1, %s", err.Error())
+				return
+			}
+			util.Serialize(quote)
+			callback(&models.Quote{
+				Open:  quote.OpenPrice,
+				Close: quote.OpenPrice,
+				High:  quote.HighPrice,
+				Low:   quote.LowPrice,
+
+				AskPrice:    quote.AskPrice,
+				BidPrice:    quote.BidPrice,
+				MarketPrice: quote.MarkPrice,
+
+				FiftyTwoWeekHigh: quote.FiftyTwoWeekHigh,
+				FiftyTwoWeekLow:  quote.FiftyTwoWeekLow,
+			})
+		})
 	}
+
+	return nil
 }

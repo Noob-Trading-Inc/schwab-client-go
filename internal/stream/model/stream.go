@@ -130,6 +130,63 @@ type TDWSResponse_L1_Content_Common struct {
 	Delayed bool   `json:"delayed,omitempty"` //Is Data delayed.
 }
 
+type TDWSResponse_L1_Content_Equity struct {
+	TDWSResponse_L1_Content_Common
+	AssetMainType string `json:"assetMainType,omitempty"` //Underlying asset type.
+
+	BidPrice                     float64 `json:"1,omitempty"`  //Current Best Bid Price
+	AskPrice                     float64 `json:"2,omitempty"`  //Current Best Ask Price
+	LastPrice                    float64 `json:"3,omitempty"`  //Price at which the last trade was matched
+	BidSize                      int64   `json:"4,omitempty"`  //Number of shares for bid
+	AskSize                      int64   `json:"5,omitempty"`  //Number of shares for ask
+	AskID                        string  `json:"6,omitempty"`  //Exchange with the best ask
+	BidID                        string  `json:"7,omitempty"`  //Exchange with the best bid
+	TotalVolume                  float64 `json:"8,omitempty"`  //Aggregated shares traded throughout the day, including pre/post market hours.
+	LastSize                     int64   `json:"9,omitempty"`  //Number of shares traded with last trade
+	HighPrice                    float64 `json:"10,omitempty"` //Day’s high trade price
+	LowPrice                     float64 `json:"11,omitempty"` //Day’s low trade price
+	ClosePrice                   float64 `json:"12,omitempty"` //Previous day’s closing price
+	ExchangeID                   string  `json:"13,omitempty"` //Primary "listing" Exchange
+	Marginable                   bool    `json:"14,omitempty"`
+	Description                  string  `json:"15,omitempty"` //Description of the product
+	LastID                       string  `json:"16,omitempty"` //Exchange where last trade was executed
+	OpenPrice                    float64 `json:"17,omitempty"` //Day's Open Price
+	NetChange                    float64 `json:"18,omitempty"` //Current Last-Prev Close
+	FiftyTwoWeekHigh             float64 `json:"19,omitempty"`
+	FiftyTwoWeekLow              float64 `json:"20,omitempty"`
+	PERatio                      float64 `json:"21,omitempty"`
+	AnnualDividendAmount         float64 `json:"22,omitempty"`
+	DividendYield                float64 `json:"23,omitempty"`
+	NAV                          float64 `json:"24,omitempty"`
+	ExhangeName                  string  `json:"25,omitempty"` //Name of exchange
+	DividendDate                 string  `json:"26,omitempty"`
+	RegularMarketQuote           bool    `json:"27,omitempty"`
+	RegularMarketTrade           bool    `json:"28,omitempty"`
+	RegularMarketLastPrice       float64 `json:"29,omitempty"`
+	RegularMarketLastSize        int64   `json:"30,omitempty"`
+	RegularMarketNetChange       float64 `json:"31,omitempty"`
+	SecurityStatus               string  `json:"32,omitempty"`
+	MarkPrice                    float64 `json:"33,omitempty"`
+	QuoteTimeInLong              int64   `json:"34,omitempty"`
+	TradeTimeInLong              int64   `json:"35,omitempty"`
+	RegularMarketTradeTimeInLong int64   `json:"36,omitempty"`
+	BidTime                      int64   `json:"37,omitempty"`
+	AskTime                      int64   `json:"38,omitempty"`
+	AskMICID                     string  `json:"39,omitempty"`
+	BidMICID                     string  `json:"40,omitempty"`
+	LastMICID                    string  `json:"41,omitempty"`
+	NetPercentChange             float64 `json:"42,omitempty"`
+	RegularMarketPercentChange   float64 `json:"43,omitempty"`
+	MarkPriceNetChange           float64 `json:"44,omitempty"`
+	MarkPricePercentChange       float64 `json:"45,omitempty"`
+	HardToBorrowQuantity         int     `json:"46,omitempty"`
+	HardToBorrowRate             float64 `json:"47,omitempty"`
+	HardToBorrow                 int     `json:"48,omitempty"`
+	Shortable                    int     `json:"49,omitempty"`
+	PostMarketNetChange          float64 `json:"50,omitempty"`
+	PostMarketPercentChange      float64 `json:"51,omitempty"`
+}
+
 type TDWSResponse_L1_Content_Futures struct {
 	TDWSResponse_L1_Content_Common
 	AssetMainType string `json:"assetMainType,omitempty"` //Underlying asset type.
