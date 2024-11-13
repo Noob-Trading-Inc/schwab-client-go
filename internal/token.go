@@ -94,7 +94,7 @@ func (c *token) GetToken() string {
 	}
 
 	if time.Now().After(c.RefreshTokenExpiry) {
-		log.Fatal("Refresh Token Expired, get new token")
+		log.Fatal("Schwab Refresh Token Expired, get new token")
 	}
 
 	return c.BearerToken
@@ -114,7 +114,7 @@ func (c *token) loadNewToken() error {
 		return fmt.Errorf("Invalid External RefreshToken")
 	}
 
-	util.Log("Getting New Token...")
+	util.Log("Getting New Schwab Token...")
 
 	// 1 : Start local call back Server
 	authCodeEncoded := ""
@@ -126,7 +126,7 @@ func (c *token) loadNewToken() error {
 
 	// 2 : OAuth - Authorization Code
 	util.OpenBrowser(fmt.Sprintf("%s?client_id=%s&redirect_uri=%s&scope=readonly&response_type=code", Endpoints.Auth, clientID, redirectURL))
-	util.Log("Waiting fot Auth Code...")
+	util.Log("Waiting fot Schwab Auth Code...")
 	for authCodeEncoded == "" {
 		time.Sleep(1 * time.Second)
 	}
@@ -141,7 +141,7 @@ func (c *token) loadNewToken() error {
 }
 
 func (c *token) fetchTokens(payload string) error {
-	util.Log("Refreshing Token...")
+	util.Log("Refreshing Schwab Token...")
 	authHeader := fmt.Sprintf("Basic %s", base64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("%s:%s", clientID, clientSecret))))
 	req, err := http.NewRequest("POST", Endpoints.Token, bytes.NewBuffer([]byte(payload)))
 	if util.OnError(err) != nil {
