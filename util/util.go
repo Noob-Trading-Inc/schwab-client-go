@@ -20,6 +20,10 @@ func init() {
 	godotenv.Load()
 }
 
+func Ptr[T any](v T) *T {
+	return &v
+}
+
 func OpenBrowser(url string) error {
 	var err error
 	switch runtime.GOOS {

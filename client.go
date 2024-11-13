@@ -18,6 +18,7 @@ import (
 
 type client struct {
 	Acounts        trader.Accounts
+	Orders         trader.Orders
 	UserPreference trader.UserPreference
 	Stream         stream.TDStream
 
@@ -42,6 +43,7 @@ func (c *client) Init() (err error) {
 	util.Logf("Token : %s....", token[0:5])
 
 	c.Acounts = trader.Accounts{}
+	c.Orders = trader.Orders{}
 	c.UserPreference = trader.UserPreference{}
 	c.Stream = stream.TDStream{}
 
@@ -60,8 +62,17 @@ func (c *client) Init() (err error) {
 	return
 }
 
+var shutdownInprogress bool
+
 func (c *client) Shutdown() {
-	Client.Stream.Dispose()
+	if shutdownInprogress {
+		return
+	}
+	shutdownInprogress = true
+
+	if isStreamInitiated {
+		Client.Stream.Dispose()
+	}
 }
 
 var isStreamInitiated bool

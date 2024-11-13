@@ -76,7 +76,7 @@ func (c *token) GetToken() string {
 
 	err := util.FromFile(tokenPath, c)
 	if err != nil || time.Now().After(c.RefreshTokenExpiry) || (c.BearerToken == "" && time.Now().After(c.RefreshTokenExpiry)) {
-		err = c.LoadNewToken()
+		err = c.loadNewToken()
 
 		if err != nil {
 			util.OnError(err)
@@ -100,7 +100,13 @@ func (c *token) GetToken() string {
 	return c.BearerToken
 }
 
-func (c *token) LoadNewToken() error {
+var onTokenRefresh = []func(){}
+
+func (c *token) DoOnTokenRefresh(f func()) {
+	onTokenRefresh = append(onTokenRefresh, f)
+}
+
+func (c *token) loadNewToken() error {
 	if c.externalRefreshToken {
 		if time.Now().After(c.RefreshTokenExpiry) {
 			return fmt.Errorf("External RefreshToken Expired")
@@ -168,6 +174,10 @@ func (c *token) fetchTokens(payload string) error {
 	c.BearerToken = rt.AccessToken
 
 	util.ToFile(tokenPath, c)
+
+	for _, f := range onTokenRefresh {
+		f()
+	}
 
 	return nil
 }

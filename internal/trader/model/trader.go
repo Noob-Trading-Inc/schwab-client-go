@@ -1,6 +1,6 @@
 package model
 
-import "time"
+import "github.com/Noob-Trading-Inc/schwab-client-go/util"
 
 /*
  * Trader API - Account Access and User Preferences
@@ -89,15 +89,15 @@ type AccountEquity struct {
  */
 
 type AccountFixedIncome struct {
-	AssetType    string    `json:"assetType"`
-	Cusip        string    `json:"cusip,omitempty"`
-	Symbol       string    `json:"symbol,omitempty"`
-	Description  string    `json:"description,omitempty"`
-	InstrumentId int64     `json:"instrumentId,omitempty"`
-	NetChange    float64   `json:"netChange,omitempty"`
-	MaturityDate time.Time `json:"maturityDate,omitempty"`
-	Factor       float64   `json:"factor,omitempty"`
-	VariableRate float64   `json:"variableRate,omitempty"`
+	AssetType    string     `json:"assetType"`
+	Cusip        string     `json:"cusip,omitempty"`
+	Symbol       string     `json:"symbol,omitempty"`
+	Description  string     `json:"description,omitempty"`
+	InstrumentId int64      `json:"instrumentId,omitempty"`
+	NetChange    float64    `json:"netChange,omitempty"`
+	MaturityDate *util.Time `json:"maturityDate,omitempty"`
+	Factor       float64    `json:"factor,omitempty"`
+	VariableRate float64    `json:"variableRate,omitempty"`
 }
 
 /*
@@ -188,11 +188,35 @@ type AccountsBaseInstrument struct {
  */
 
 type AccountsInstrument struct {
+	/*
+		AccountCashEquivalent
+		AccountEquity
+		AccountFixedIncome
+		AccountMutualFund
+		AccountOption
+	*/
+
 	AccountCashEquivalent
-	AccountEquity
-	AccountFixedIncome
-	AccountMutualFund
-	AccountOption
+	AssetType    string  `json:"assetType"`
+	Cusip        string  `json:"cusip,omitempty"`
+	Symbol       string  `json:"symbol,omitempty"`
+	Description  string  `json:"description,omitempty"`
+	InstrumentId int64   `json:"instrumentId,omitempty"`
+	NetChange    float64 `json:"netChange,omitempty"`
+
+	//AccountCashEquivalent & AccountOption
+	Type_ string `json:"type,omitempty"`
+
+	//AccountFixedIncome
+	MaturityDate *util.Time `json:"maturityDate,omitempty"`
+	Factor       float64    `json:"factor,omitempty"`
+	VariableRate float64    `json:"variableRate,omitempty"`
+
+	//AccountOption
+	OptionDeliverables []AccountApiOptionDeliverable `json:"optionDeliverables,omitempty"`
+	PutCall            string                        `json:"putCall,omitempty"`
+	OptionMultiplier   int32                         `json:"optionMultiplier,omitempty"`
+	UnderlyingSymbol   string                        `json:"underlyingSymbol,omitempty"`
 }
 
 /*
@@ -560,12 +584,12 @@ const (
  */
 
 type ExecutionLeg struct {
-	LegId             int64     `json:"legId,omitempty"`
-	Price             float64   `json:"price,omitempty"`
-	Quantity          float64   `json:"quantity,omitempty"`
-	MismarkedQuantity float64   `json:"mismarkedQuantity,omitempty"`
-	InstrumentId      int64     `json:"instrumentId,omitempty"`
-	Time              time.Time `json:"time,omitempty"`
+	LegId             int64      `json:"legId,omitempty"`
+	Price             float64    `json:"price,omitempty"`
+	Quantity          float64    `json:"quantity,omitempty"`
+	MismarkedQuantity float64    `json:"mismarkedQuantity,omitempty"`
+	InstrumentId      int64      `json:"instrumentId,omitempty"`
+	Time              *util.Time `json:"time,omitempty"`
 }
 
 /*
@@ -685,12 +709,12 @@ type Forex struct {
  */
 
 type Future struct {
-	ActiveContract  bool      `json:"activeContract,omitempty"`
-	Type_           string    `json:"type,omitempty"`
-	ExpirationDate  time.Time `json:"expirationDate,omitempty"`
-	LastTradingDate time.Time `json:"lastTradingDate,omitempty"`
-	FirstNoticeDate time.Time `json:"firstNoticeDate,omitempty"`
-	Multiplier      float64   `json:"multiplier,omitempty"`
+	ActiveContract  bool       `json:"activeContract,omitempty"`
+	Type_           string     `json:"type,omitempty"`
+	ExpirationDate  *util.Time `json:"expirationDate,omitempty"`
+	LastTradingDate *util.Time `json:"lastTradingDate,omitempty"`
+	FirstNoticeDate *util.Time `json:"firstNoticeDate,omitempty"`
+	Multiplier      float64    `json:"multiplier,omitempty"`
 }
 
 /*
@@ -864,14 +888,14 @@ type Order struct {
 	Session                  *Session                  `json:"session,omitempty"`
 	Duration                 *Duration                 `json:"duration,omitempty"`
 	OrderType                *OrderType                `json:"orderType,omitempty"`
-	CancelTime               time.Time                 `json:"cancelTime,omitempty"`
+	CancelTime               *util.Time                `json:"cancelTime,omitempty"`
 	ComplexOrderStrategyType *ComplexOrderStrategyType `json:"complexOrderStrategyType,omitempty"`
 	Quantity                 float64                   `json:"quantity,omitempty"`
 	FilledQuantity           float64                   `json:"filledQuantity,omitempty"`
 	RemainingQuantity        float64                   `json:"remainingQuantity,omitempty"`
 	RequestedDestination     *RequestedDestination     `json:"requestedDestination,omitempty"`
 	DestinationLinkName      string                    `json:"destinationLinkName,omitempty"`
-	ReleaseTime              time.Time                 `json:"releaseTime,omitempty"`
+	ReleaseTime              *util.Time                `json:"releaseTime,omitempty"`
 	StopPrice                float64                   `json:"stopPrice,omitempty"`
 	StopPriceLinkBasis       *StopPriceLinkBasis       `json:"stopPriceLinkBasis,omitempty"`
 	StopPriceLinkType        *StopPriceLinkType        `json:"stopPriceLinkType,omitempty"`
@@ -889,8 +913,8 @@ type Order struct {
 	Cancelable               bool                      `json:"cancelable,omitempty"`
 	Editable                 bool                      `json:"editable,omitempty"`
 	Status                   *Status                   `json:"status,omitempty"`
-	EnteredTime              time.Time                 `json:"enteredTime,omitempty"`
-	CloseTime                time.Time                 `json:"closeTime,omitempty"`
+	EnteredTime              *util.Time                `json:"enteredTime,omitempty"`
+	CloseTime                *util.Time                `json:"closeTime,omitempty"`
 	Tag                      string                    `json:"tag,omitempty"`
 	AccountNumber            int64                     `json:"accountNumber,omitempty"`
 	OrderActivityCollection  []OrderActivity           `json:"orderActivityCollection,omitempty"`
@@ -993,13 +1017,13 @@ type OrderRequest struct {
 	Session                  *Session                  `json:"session,omitempty"`
 	Duration                 *Duration                 `json:"duration,omitempty"`
 	OrderType                *OrderTypeRequest         `json:"orderType,omitempty"`
-	CancelTime               time.Time                 `json:"cancelTime,omitempty"`
+	CancelTime               *util.Time                `json:"cancelTime,omitempty"`
 	ComplexOrderStrategyType *ComplexOrderStrategyType `json:"complexOrderStrategyType,omitempty"`
 	Quantity                 float64                   `json:"quantity,omitempty"`
 	FilledQuantity           float64                   `json:"filledQuantity,omitempty"`
 	RemainingQuantity        float64                   `json:"remainingQuantity,omitempty"`
 	DestinationLinkName      string                    `json:"destinationLinkName,omitempty"`
-	ReleaseTime              time.Time                 `json:"releaseTime,omitempty"`
+	ReleaseTime              *util.Time                `json:"releaseTime,omitempty"`
 	StopPrice                float64                   `json:"stopPrice,omitempty"`
 	StopPriceLinkBasis       *StopPriceLinkBasis       `json:"stopPriceLinkBasis,omitempty"`
 	StopPriceLinkType        *StopPriceLinkType        `json:"stopPriceLinkType,omitempty"`
@@ -1017,8 +1041,8 @@ type OrderRequest struct {
 	Cancelable               bool                      `json:"cancelable,omitempty"`
 	Editable                 bool                      `json:"editable,omitempty"`
 	Status                   *Status                   `json:"status,omitempty"`
-	EnteredTime              time.Time                 `json:"enteredTime,omitempty"`
-	CloseTime                time.Time                 `json:"closeTime,omitempty"`
+	EnteredTime              *util.Time                `json:"enteredTime,omitempty"`
+	CloseTime                *util.Time                `json:"closeTime,omitempty"`
 	AccountNumber            int64                     `json:"accountNumber,omitempty"`
 	OrderActivityCollection  []OrderActivity           `json:"orderActivityCollection,omitempty"`
 	ReplacingOrderCollection []OrderRequest            `json:"replacingOrderCollection,omitempty"`
@@ -1039,8 +1063,8 @@ type OrderRequest struct {
 type OrderStrategy struct {
 	AccountNumber          string                    `json:"accountNumber,omitempty"`
 	AdvancedOrderType      string                    `json:"advancedOrderType,omitempty"`
-	CloseTime              time.Time                 `json:"closeTime,omitempty"`
-	EnteredTime            time.Time                 `json:"enteredTime,omitempty"`
+	CloseTime              *util.Time                `json:"closeTime,omitempty"`
+	EnteredTime            *util.Time                `json:"enteredTime,omitempty"`
 	OrderBalance           *OrderBalance             `json:"orderBalance,omitempty"`
 	OrderStrategyType      *OrderStrategyType        `json:"orderStrategyType,omitempty"`
 	OrderVersion           float64                   `json:"orderVersion,omitempty"`
@@ -1591,15 +1615,15 @@ const (
 
 type Transaction struct {
 	ActivityId     int64            `json:"activityId,omitempty"`
-	Time           time.Time        `json:"time,omitempty"`
+	Time           *util.Time       `json:"time,omitempty"`
 	User           *UserDetails     `json:"user,omitempty"`
 	Description    string           `json:"description,omitempty"`
 	AccountNumber  string           `json:"accountNumber,omitempty"`
 	Type_          *TransactionType `json:"type,omitempty"`
 	Status         string           `json:"status,omitempty"`
 	SubAccount     string           `json:"subAccount,omitempty"`
-	TradeDate      time.Time        `json:"tradeDate,omitempty"`
-	SettlementDate time.Time        `json:"settlementDate,omitempty"`
+	TradeDate      *util.Time       `json:"tradeDate,omitempty"`
+	SettlementDate *util.Time       `json:"settlementDate,omitempty"`
 	PositionId     int64            `json:"positionId,omitempty"`
 	OrderId        int64            `json:"orderId,omitempty"`
 	NetAmount      float64          `json:"netAmount,omitempty"`
@@ -1696,17 +1720,17 @@ type TransactionEquity struct {
  */
 
 type TransactionFixedIncome struct {
-	AssetType    string    `json:"assetType"`
-	Cusip        string    `json:"cusip,omitempty"`
-	Symbol       string    `json:"symbol,omitempty"`
-	Description  string    `json:"description,omitempty"`
-	InstrumentId int64     `json:"instrumentId,omitempty"`
-	NetChange    float64   `json:"netChange,omitempty"`
-	Type_        string    `json:"type,omitempty"`
-	MaturityDate time.Time `json:"maturityDate,omitempty"`
-	Factor       float64   `json:"factor,omitempty"`
-	Multiplier   float64   `json:"multiplier,omitempty"`
-	VariableRate float64   `json:"variableRate,omitempty"`
+	AssetType    string     `json:"assetType"`
+	Cusip        string     `json:"cusip,omitempty"`
+	Symbol       string     `json:"symbol,omitempty"`
+	Description  string     `json:"description,omitempty"`
+	InstrumentId int64      `json:"instrumentId,omitempty"`
+	NetChange    float64    `json:"netChange,omitempty"`
+	Type_        string     `json:"type,omitempty"`
+	MaturityDate *util.Time `json:"maturityDate,omitempty"`
+	Factor       float64    `json:"factor,omitempty"`
+	Multiplier   float64    `json:"multiplier,omitempty"`
+	VariableRate float64    `json:"variableRate,omitempty"`
 }
 
 /*
@@ -1744,19 +1768,19 @@ type TransactionInstrument struct {
  */
 
 type TransactionMutualFund struct {
-	AssetType            string    `json:"assetType"`
-	Cusip                string    `json:"cusip,omitempty"`
-	Symbol               string    `json:"symbol,omitempty"`
-	Description          string    `json:"description,omitempty"`
-	InstrumentId         int64     `json:"instrumentId,omitempty"`
-	NetChange            float64   `json:"netChange,omitempty"`
-	FundFamilyName       string    `json:"fundFamilyName,omitempty"`
-	FundFamilySymbol     string    `json:"fundFamilySymbol,omitempty"`
-	FundGroup            string    `json:"fundGroup,omitempty"`
-	Type_                string    `json:"type,omitempty"`
-	ExchangeCutoffTime   time.Time `json:"exchangeCutoffTime,omitempty"`
-	PurchaseCutoffTime   time.Time `json:"purchaseCutoffTime,omitempty"`
-	RedemptionCutoffTime time.Time `json:"redemptionCutoffTime,omitempty"`
+	AssetType            string     `json:"assetType"`
+	Cusip                string     `json:"cusip,omitempty"`
+	Symbol               string     `json:"symbol,omitempty"`
+	Description          string     `json:"description,omitempty"`
+	InstrumentId         int64      `json:"instrumentId,omitempty"`
+	NetChange            float64    `json:"netChange,omitempty"`
+	FundFamilyName       string     `json:"fundFamilyName,omitempty"`
+	FundFamilySymbol     string     `json:"fundFamilySymbol,omitempty"`
+	FundGroup            string     `json:"fundGroup,omitempty"`
+	Type_                string     `json:"type,omitempty"`
+	ExchangeCutoffTime   *util.Time `json:"exchangeCutoffTime,omitempty"`
+	PurchaseCutoffTime   *util.Time `json:"purchaseCutoffTime,omitempty"`
+	RedemptionCutoffTime *util.Time `json:"redemptionCutoffTime,omitempty"`
 }
 
 /*
@@ -1776,7 +1800,7 @@ type TransactionOption struct {
 	Description             string                            `json:"description,omitempty"`
 	InstrumentId            int64                             `json:"instrumentId,omitempty"`
 	NetChange               float64                           `json:"netChange,omitempty"`
-	ExpirationDate          time.Time                         `json:"expirationDate,omitempty"`
+	ExpirationDate          *util.Time                        `json:"expirationDate,omitempty"`
 	OptionDeliverables      []TransactionApiOptionDeliverable `json:"optionDeliverables,omitempty"`
 	OptionPremiumMultiplier int64                             `json:"optionPremiumMultiplier,omitempty"`
 	PutCall                 string                            `json:"putCall,omitempty"`
