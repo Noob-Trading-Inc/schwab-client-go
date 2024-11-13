@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"sync"
 	"time"
 
 	"github.com/Noob-Trading-Inc/schwab-client-go/util"
@@ -40,6 +41,7 @@ type token struct {
 }
 
 var Token = &token{}
+var token_lock = &sync.Mutex{}
 
 func (c *token) init() {
 	if clientID == "" {
@@ -85,11 +87,14 @@ func (c *token) GetToken() string {
 	}
 
 	if time.Now().After(c.BearerTokenExpiry) {
-		payload := fmt.Sprintf("grant_type=refresh_token&client_id=%s&client_secret=%s&refresh_token=%s", clientID, clientSecret, c.RefreshToken)
-		err = c.fetchTokens(payload)
-		if err != nil {
-			util.OnError(err)
-			return ""
+		token_lock.Lock()
+		if time.Now().After(c.BearerTokenExpiry) {
+			payload := fmt.Sprintf("grant_type=refresh_token&client_id=%s&client_secret=%s&refresh_token=%s", clientID, clientSecret, c.RefreshToken)
+			err = c.fetchTokens(payload)
+			if err != nil {
+				util.OnError(err)
+				return ""
+			}
 		}
 	}
 
