@@ -4,16 +4,15 @@ import (
 	"fmt"
 
 	"github.com/Noob-Trading-Inc/schwab-client-go/internal"
-
-	"github.com/Noob-Trading-Inc/schwab-client-go/internal/trader/model"
+	"github.com/Noob-Trading-Inc/schwab-client-go/models"
 )
 
 type Accounts struct {
 }
 
-var accountNumbers *[]model.AccountNumberHash
+var accountNumbers *[]models.AccountNumberHash
 
-func (c Accounts) GetAccountNumbers() (rv []model.AccountNumberHash, err error) {
+func (c Accounts) GetAccountNumbers() (rv []models.AccountNumberHash, err error) {
 	if accountNumbers != nil {
 		rv = *accountNumbers
 		return
@@ -31,13 +30,13 @@ func (c Accounts) GetAccountNumbers() (rv []model.AccountNumberHash, err error) 
 	return
 }
 
-func (c Accounts) GetAccounts() (rv []model.Account, err error) {
+func (c Accounts) GetAccounts() (rv []models.Account, err error) {
 	url := fmt.Sprintf("%s/%s?fields=positions", internal.Endpoints.Trader, "accounts")
 	err = internal.API.Get(url, &rv)
 	return
 }
 
-func (c Accounts) GetAccount(number string) (rv model.Account, err error) {
+func (c Accounts) GetAccount(number string) (rv models.Account, err error) {
 	url := fmt.Sprintf("%s/%s/%s?fields=positions", internal.Endpoints.Trader, "accounts", number)
 	err = internal.API.Get(url, &rv)
 	return

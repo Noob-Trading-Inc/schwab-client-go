@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/Noob-Trading-Inc/schwab-client-go/internal"
-	"github.com/Noob-Trading-Inc/schwab-client-go/internal/trader/model"
+	"github.com/Noob-Trading-Inc/schwab-client-go/models"
 )
 
 type Order struct {
@@ -18,7 +18,7 @@ type Order struct {
 type Orders struct {
 }
 
-func (c Orders) PlaceOrder(number string, order model.Order) (rv model.Order, err error) {
+func (c Orders) PlaceOrder(number string, order models.Order) (rv models.Order, err error) {
 	url := fmt.Sprintf("%s/%s/%s/%s", internal.Endpoints.Trader, "accounts", number, "orders")
 	location := ""
 	location, err = internal.API.Post(url, order, nil)
@@ -26,7 +26,7 @@ func (c Orders) PlaceOrder(number string, order model.Order) (rv model.Order, er
 	return
 }
 
-func (c Orders) ReplaceOrder(number string, order model.Order) (rv model.Order, err error) {
+func (c Orders) ReplaceOrder(number string, order models.Order) (rv models.Order, err error) {
 	url := fmt.Sprintf("%s/%s/%s/%s/%d", internal.Endpoints.Trader, "accounts", number, "orders", order.OrderId)
 	location := ""
 	location, err = internal.API.Put(url, order, nil)
@@ -40,13 +40,13 @@ func (c Orders) CancelOrder(number string, orderId int64) (err error) {
 	return
 }
 
-func (c Orders) GetOrder(number string, orderId int64) (rv model.Order, err error) {
+func (c Orders) GetOrder(number string, orderId int64) (rv models.Order, err error) {
 	url := fmt.Sprintf("%s/%s/%s/%s/%d", internal.Endpoints.Trader, "accounts", number, "orders", orderId)
 	err = internal.API.Get(url, &rv)
 	return
 }
 
-func (c Orders) GetAllOrders(number string) (rv []model.Order, err error) {
+func (c Orders) GetAllOrders(number string) (rv []models.Order, err error) {
 	var u *url.URL
 	u, err = url.Parse(fmt.Sprintf("%s/%s/%s/%s", internal.Endpoints.Trader, "accounts", number, "orders"))
 	if err != nil {

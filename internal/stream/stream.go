@@ -7,7 +7,7 @@ import (
 	"sync"
 	"time"
 
-	tmodel "github.com/Noob-Trading-Inc/schwab-client-go/internal/trader/model"
+	tmodel "github.com/Noob-Trading-Inc/schwab-client-go/models"
 
 	"github.com/Noob-Trading-Inc/schwab-client-go/internal"
 	"github.com/Noob-Trading-Inc/schwab-client-go/internal/stream/model"
