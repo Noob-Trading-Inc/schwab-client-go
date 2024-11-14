@@ -86,12 +86,13 @@ func (c *client) StreamInit(onConnectCallback func(), enableLogging bool) error 
 			if err != nil {
 				return util.OnError(err)
 			}
+
+			isStreamInitiated = true
 			c.Stream.OnConnect = onConnectCallback
 			if enableLogging {
 				c.Stream.EnableLogging()
 			}
 			c.Stream.Init(up)
-			isStreamInitiated = true
 		}
 	}
 	return nil
