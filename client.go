@@ -46,6 +46,7 @@ func (c *client) Init() (err error) {
 	c.Orders = trader.Orders{}
 	c.UserPreference = trader.UserPreference{}
 	c.Stream = &stream.TDStream{}
+	c.Stream.OnConnect = streamOnReconnectCallBack
 
 	c.Quotes = marketdata.Quotes{}
 
@@ -71,12 +72,18 @@ func (c *client) Shutdown() {
 	shutdownInprogress = true
 
 	if isStreamInitiated {
-		Client.Stream.Dispose()
+		c.Stream.Dispose()
 	}
 }
 
-func (c *client) StreamOnReconnect(callback func()) {
-	Client.Stream.OnConnect = callback
+var streamOnReconnectCallBack func()
+
+func (c *client) StreamOnConnect(callback func()) {
+	streamOnReconnectCallBack = callback
+
+	if c.Stream != nil {
+		c.Stream.OnConnect = callback
+	}
 }
 
 var isStreamInitiated bool
@@ -86,11 +93,11 @@ func (c *client) StreamQuotes(symbols []string, callback func(*models.Quote) err
 	if !isStreamInitiated {
 		isStreamInitiatedLock.Lock()
 		if !isStreamInitiated {
-			up, err := Client.UserPreference.GetUserPreference()
+			up, err := c.UserPreference.GetUserPreference()
 			if err != nil {
 				return util.OnError(err)
 			}
-			Client.Stream.Init(up)
+			c.Stream.Init(up)
 		}
 	}
 
@@ -100,7 +107,7 @@ func (c *client) StreamQuotes(symbols []string, callback func(*models.Quote) err
 		}
 
 		if symbol[0:1] == "/" {
-			Client.Stream.Subscribe_L1_Futures(symbol, func(err error, quote *model.TDWSResponse_L1_Content_Futures) {
+			c.Stream.Subscribe_L1_Futures(symbol, func(err error, quote *model.TDWSResponse_L1_Content_Futures) {
 				if err != nil {
 					util.Log("ERROR Futures L1, %s", err.Error())
 					return
@@ -127,7 +134,7 @@ func (c *client) StreamQuotes(symbols []string, callback func(*models.Quote) err
 			continue
 		}
 
-		Client.Stream.Subscribe_L1_Equity(symbol, func(err error, quote *model.TDWSResponse_L1_Content_Equity) {
+		c.Stream.Subscribe_L1_Equity(symbol, func(err error, quote *model.TDWSResponse_L1_Content_Equity) {
 			if err != nil {
 				util.Log("ERROR Equity L1, %s", err.Error())
 				return
