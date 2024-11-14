@@ -101,9 +101,6 @@ func (t *TDStream) login() {
 		if t.isLoggingEnabled {
 			util.Log("stream connection success")
 		}
-		if t.OnConnect != nil {
-			t.OnConnect()
-		}
 	}
 	t.socket.OnPingReceived = func(data string, socket gowebsocket.Socket) {
 		if t.OnCheck != nil {
@@ -155,6 +152,10 @@ func (t *TDStream) login() {
 		util.Log(fmt.Sprintf("OnLogin:%s", util.Serialize(o)))
 	}
 	t.isConnected = true
+
+	if t.OnConnect != nil {
+		t.OnConnect()
+	}
 }
 
 func (t *TDStream) sendCommand(request model.TDWSRequest, onresponse func(message string)) {

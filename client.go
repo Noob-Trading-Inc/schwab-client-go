@@ -75,6 +75,10 @@ func (c *client) Shutdown() {
 	}
 }
 
+func (c *client) StreamOnReconnect(callback func()) {
+	Client.Stream.OnConnect = callback
+}
+
 var isStreamInitiated bool
 var isStreamInitiatedLock = sync.RWMutex{}
 
