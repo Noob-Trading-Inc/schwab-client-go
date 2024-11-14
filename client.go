@@ -106,7 +106,7 @@ func (c *client) StreamQuotes(symbols []string, callback func(*models.Quote) err
 					Symbol: quote.Symbol,
 
 					Open:  quote.OpenPrice,
-					Close: quote.OpenPrice,
+					Close: quote.ClosePrice,
 					High:  quote.HighPrice,
 					Low:   quote.LowPrice,
 
@@ -133,7 +133,7 @@ func (c *client) StreamQuotes(symbols []string, callback func(*models.Quote) err
 				Symbol: quote.Symbol,
 
 				Open:  quote.OpenPrice,
-				Close: quote.OpenPrice,
+				Close: quote.ClosePrice,
 				High:  quote.HighPrice,
 				Low:   quote.LowPrice,
 
