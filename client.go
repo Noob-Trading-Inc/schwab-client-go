@@ -91,6 +91,7 @@ func (c *client) StreamInit(onConnectCallback func(), enableLogging bool) error 
 				c.Stream.EnableLogging()
 			}
 			c.Stream.Init(up)
+			isStreamInitiated = true
 		}
 	}
 	return nil
