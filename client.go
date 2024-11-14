@@ -20,7 +20,7 @@ type client struct {
 	Acounts        trader.Accounts
 	Orders         trader.Orders
 	UserPreference trader.UserPreference
-	Stream         stream.TDStream
+	Stream         *stream.TDStream
 
 	Quotes marketdata.Quotes
 }
@@ -45,7 +45,7 @@ func (c *client) Init() (err error) {
 	c.Acounts = trader.Accounts{}
 	c.Orders = trader.Orders{}
 	c.UserPreference = trader.UserPreference{}
-	c.Stream = stream.TDStream{}
+	c.Stream = &stream.TDStream{}
 
 	c.Quotes = marketdata.Quotes{}
 
