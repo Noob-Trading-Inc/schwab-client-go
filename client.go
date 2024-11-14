@@ -46,7 +46,6 @@ func (c *client) Init() (err error) {
 	c.Orders = trader.Orders{}
 	c.UserPreference = trader.UserPreference{}
 	c.Stream = &stream.TDStream{}
-	c.Stream.OnConnect = streamOnReconnectCallBack
 
 	c.Quotes = marketdata.Quotes{}
 
@@ -76,20 +75,10 @@ func (c *client) Shutdown() {
 	}
 }
 
-var streamOnReconnectCallBack func()
-
-func (c *client) StreamOnConnect(callback func()) {
-	streamOnReconnectCallBack = callback
-
-	if c.Stream != nil {
-		c.Stream.OnConnect = callback
-	}
-}
-
 var isStreamInitiated bool
 var isStreamInitiatedLock = sync.RWMutex{}
 
-func (c *client) StreamQuotes(symbols []string, callback func(*models.Quote) error) error {
+func (c *client) StreamInit(onConnectCallback func(), enableLogging bool) error {
 	if !isStreamInitiated {
 		isStreamInitiatedLock.Lock()
 		if !isStreamInitiated {
@@ -97,8 +86,19 @@ func (c *client) StreamQuotes(symbols []string, callback func(*models.Quote) err
 			if err != nil {
 				return util.OnError(err)
 			}
+			c.Stream.OnConnect = onConnectCallback
+			if enableLogging {
+				c.Stream.EnableLogging()
+			}
 			c.Stream.Init(up)
 		}
+	}
+	return nil
+}
+
+func (c *client) StreamQuotes(symbols []string, callback func(*models.Quote) error) error {
+	if !isStreamInitiated {
+		return fmt.Errorf("Please call StreamInit before subscribing to quotes")
 	}
 
 	for _, symbol := range symbols {
