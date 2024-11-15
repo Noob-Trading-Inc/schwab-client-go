@@ -81,6 +81,7 @@ var isStreamInitiatedLock = sync.RWMutex{}
 func (c *client) StreamInit(onConnectCallback func(), enableLogging bool) error {
 	if !isStreamInitiated {
 		isStreamInitiatedLock.Lock()
+		defer isStreamInitiatedLock.Unlock()
 		if !isStreamInitiated {
 			up, err := c.UserPreference.GetUserPreference()
 			if err != nil {

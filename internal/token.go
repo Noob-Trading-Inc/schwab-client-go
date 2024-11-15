@@ -88,6 +88,7 @@ func (c *token) GetToken() string {
 
 	if time.Now().After(c.BearerTokenExpiry) {
 		token_lock.Lock()
+		defer token_lock.Unlock()
 		if time.Now().After(c.BearerTokenExpiry) {
 			payload := fmt.Sprintf("grant_type=refresh_token&client_id=%s&client_secret=%s&refresh_token=%s", clientID, clientSecret, c.RefreshToken)
 			err = c.fetchTokens(payload)
