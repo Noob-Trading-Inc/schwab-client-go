@@ -6,7 +6,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Noob-Trading-Inc/schwab-client-go/internal/trader/model"
 	"github.com/Noob-Trading-Inc/schwab-client-go/models"
 	"github.com/Noob-Trading-Inc/schwab-client-go/util"
 )
@@ -28,25 +27,33 @@ func Test_Quotes(t *testing.T) {
 	fmt.Println(util.SerializeReadable(q), err)
 }
 
+func Test_Candles(t *testing.T) {
+	q, err := Client.Quotes.GetXMinuteCandles("TSLA", 5, time.Now().UTC().AddDate(0, -1, 0).UnixMilli(), time.Now().UTC().UnixMilli())
+	fmt.Println(util.SerializeReadable(q), err)
+
+	q, err = Client.Quotes.GetXMinuteCandles("/NQ", 5, time.Now().UTC().AddDate(0, -1, 0).UnixMilli(), time.Now().UTC().UnixMilli())
+	fmt.Println(util.SerializeReadable(q), err)
+}
+
 func Test_Orders(t *testing.T) {
 	a, _ := Client.Acounts.GetAccountNumbers()
 	accountnumber := a[0].HashValue
 
 	var err error
-	o := model.Order{
+	o := models.Order{
 		Quantity:          1,
 		Price:             100,
-		Session:           util.Ptr(model.SEAMLESS_Session),
-		Duration:          util.Ptr(model.DAY_Duration),
-		OrderType:         util.Ptr(model.LIMIT_OrderType),
-		OrderStrategyType: util.Ptr(model.SINGLE_OrderStrategyType),
-		OrderLegCollection: []model.OrderLegCollection{
+		Session:           util.Ptr(models.SEAMLESS_Session),
+		Duration:          util.Ptr(models.DAY_Duration),
+		OrderType:         util.Ptr(models.LIMIT_OrderType),
+		OrderStrategyType: util.Ptr(models.SINGLE_OrderStrategyType),
+		OrderLegCollection: []models.OrderLegCollection{
 			{
-				Instrument: &model.AccountsInstrument{
+				Instrument: &models.AccountsInstrument{
 					Symbol:    "AAPL",
 					AssetType: "EQUITY",
 				},
-				Instruction: util.Ptr(model.BUY_Instruction),
+				Instruction: util.Ptr(models.BUY_Instruction),
 				Quantity:    1,
 			},
 		},
@@ -56,21 +63,21 @@ func Test_Orders(t *testing.T) {
 
 	o.Quantity = 2
 	o.OrderLegCollection[0].Quantity = 2
-	o = model.Order{
+	o = models.Order{
 		OrderId:           o.OrderId,
 		Quantity:          2,
 		Price:             100,
-		Session:           util.Ptr(model.SEAMLESS_Session),
-		Duration:          util.Ptr(model.DAY_Duration),
-		OrderType:         util.Ptr(model.LIMIT_OrderType),
-		OrderStrategyType: util.Ptr(model.SINGLE_OrderStrategyType),
-		OrderLegCollection: []model.OrderLegCollection{
+		Session:           util.Ptr(models.SEAMLESS_Session),
+		Duration:          util.Ptr(models.DAY_Duration),
+		OrderType:         util.Ptr(models.LIMIT_OrderType),
+		OrderStrategyType: util.Ptr(models.SINGLE_OrderStrategyType),
+		OrderLegCollection: []models.OrderLegCollection{
 			{
-				Instrument: &model.AccountsInstrument{
+				Instrument: &models.AccountsInstrument{
 					Symbol:    "AAPL",
 					AssetType: "EQUITY",
 				},
-				Instruction: util.Ptr(model.BUY_Instruction),
+				Instruction: util.Ptr(models.BUY_Instruction),
 				Quantity:    2,
 			},
 		},
