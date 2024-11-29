@@ -139,42 +139,6 @@ func RandomPick(options []string) string {
 	return options[randInt(0, len(options))]
 }
 
-func SliceContains(slice []string, item string) bool {
-	for _, a := range slice {
-		if a == item {
-			return true
-		}
-	}
-	return false
-}
-
-func SliceIndexOf(slice []string, item string) int {
-	i := 0
-	for _, a := range slice {
-		if a == item {
-			return i
-		}
-		i++
-	}
-	return -1
-}
-
-func SliceRemove(slice []string, index int) []string {
-	return append(slice[:index], slice[index+1:]...)
-}
-
-func SliceUnique(slice []string) []string {
-	keys := make(map[string]bool)
-	list := []string{}
-	for _, entry := range slice {
-		if _, value := keys[entry]; !value {
-			keys[entry] = true
-			list = append(list, entry)
-		}
-	}
-	return list
-}
-
 func Clone(instance interface{}, copy interface{}) error {
 	b, _ := json.Marshal(instance)
 	return json.Unmarshal(b, copy)

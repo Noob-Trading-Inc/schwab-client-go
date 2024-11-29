@@ -29,10 +29,19 @@ func Test_Quotes(t *testing.T) {
 
 func Test_Candles(t *testing.T) {
 	q, err := Client.Quotes.GetXMinuteCandles("TSLA", 5, time.Now().UTC().AddDate(0, -1, 0).UnixMilli(), time.Now().UTC().UnixMilli())
-	fmt.Println(util.SerializeReadable(q), err)
+	fmt.Println("TSLA Minute", len(q.Candles), err)
 
 	q, err = Client.Quotes.GetXMinuteCandles("/NQ", 5, time.Now().UTC().AddDate(0, -1, 0).UnixMilli(), time.Now().UTC().UnixMilli())
-	fmt.Println(util.SerializeReadable(q), err)
+	fmt.Println("/NQ Minute", len(q.Candles), err)
+
+	q, err = Client.Quotes.GetXDaysCandles("/NQ", time.Now().UTC().AddDate(0, 0, -100).UnixMilli(), time.Now().UTC().UnixMilli())
+	fmt.Println("/NQ Days", len(q.Candles), err)
+
+	q, err = Client.Quotes.GetXWeeksCandles("/NQ", time.Now().UTC().AddDate(0, 0, -100).UnixMilli(), time.Now().UTC().UnixMilli())
+	fmt.Println("/NQ Weeks", len(q.Candles), err)
+
+	q, err = Client.Quotes.GetXMonthsCandles("/NQ", time.Now().UTC().AddDate(0, 0, -100).UnixMilli(), time.Now().UTC().UnixMilli())
+	fmt.Println("/NQ Months", len(q.Candles), err)
 }
 
 func Test_Orders(t *testing.T) {
