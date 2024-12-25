@@ -22,8 +22,18 @@ func Test_Accounts(t *testing.T) {
 	fmt.Println(util.SerializeReadable(a), err)
 }
 
-func Test_Quotes(t *testing.T) {
-	q, err := Client.Quotes.GetQuote("TSLA")
+func Test_FuturesQuotes(t *testing.T) {
+	q, err := Client.Quotes.GetFuturesQuotes("/MNQ")
+	fmt.Println(util.SerializeReadable(q), err)
+}
+
+func Test_EquityQuotes(t *testing.T) {
+	q, err := Client.Quotes.GetFuturesQuotes("TSLA")
+	fmt.Println(util.SerializeReadable(q), err)
+}
+
+func Test_EquityQuote(t *testing.T) {
+	q, err := Client.Quotes.GetEquityQuote("TSLA")
 	fmt.Println(util.SerializeReadable(q), err)
 }
 

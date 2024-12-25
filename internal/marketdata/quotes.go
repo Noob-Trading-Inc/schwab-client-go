@@ -3,6 +3,7 @@ package marketdata
 import (
 	"fmt"
 	"net/url"
+	"strings"
 
 	"github.com/Noob-Trading-Inc/schwab-client-go/internal"
 	"github.com/Noob-Trading-Inc/schwab-client-go/models"
@@ -10,7 +11,29 @@ import (
 
 type Quotes struct{}
 
-func (c Quotes) GetQuote(symbol string) (rv map[string]models.EquityResponse, err error) {
+///quotes?symbols=%2FMNQ&fields=quote%2Creference&indicative=false
+
+func (c Quotes) GetEquityQuotes(symbols ...string) (rv map[string]models.EquityResponse, err error) {
+	var eSymbols = make([]string, len(symbols))
+	for i, symbol := range symbols {
+		eSymbols[i] = url.QueryEscape(symbol)
+	}
+	url := fmt.Sprintf("%s/quotes?fields=all&symbols=%s", internal.Endpoints.MarketData, strings.Join(eSymbols, ","))
+	err = internal.API.Get(url, &rv)
+	return
+}
+
+func (c Quotes) GetFuturesQuotes(symbols ...string) (rv map[string]models.FutureResponse, err error) {
+	var eSymbols = make([]string, len(symbols))
+	for i, symbol := range symbols {
+		eSymbols[i] = url.QueryEscape(symbol)
+	}
+	url := fmt.Sprintf("%s/quotes?fields=all&symbols=%s", internal.Endpoints.MarketData, strings.Join(eSymbols, ","))
+	err = internal.API.Get(url, &rv)
+	return
+}
+
+func (c Quotes) GetEquityQuote(symbol string) (rv map[string]models.EquityResponse, err error) {
 	url := fmt.Sprintf("%s/%s/quotes?fields=all", internal.Endpoints.MarketData, url.QueryEscape(symbol))
 	err = internal.API.Get(url, &rv)
 	return
