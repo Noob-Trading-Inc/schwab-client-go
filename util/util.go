@@ -41,11 +41,21 @@ func OpenBrowser(url string) error {
 }
 
 func OnError(err error) error {
-	if err == nil {
+	if err == nil || err.Error() == "" {
 		return nil
 	}
 
-	fmt.Printf("%s : ERR : %v\n", time.Now().Format("15:04"), err)
+	// Capture stack trace
+	stack := make([]byte, 4096)
+	n := runtime.Stack(stack, false)
+	stack = stack[:n]
+
+	// Create a formatted error message with stack trace
+	err = fmt.Errorf("%s : ERR : \"%v\"\nStack trace:\n%s", time.Now().Format("15:04"), err, stack)
+
+	// Print the error message to console (or log file)
+	fmt.Println(err)
+
 	return err
 }
 
