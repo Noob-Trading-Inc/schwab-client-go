@@ -1,5 +1,7 @@
 package models
 
+import "time"
+
 type Quote struct {
 	Symbol string `json:"symbol,omitempty"`
 
@@ -19,4 +21,7 @@ type Quote struct {
 	TotalVolume      float64 `json:"totalVolume,omitempty"`
 	NetChange        float64 `json:"netChange,omitempty"`
 	NetPercentChange float64 `json:"netPercentChange,omitempty"`
+
+	LastMarketPrice   float64   `json:"lastMarketPrice,omitempty"`
+	LastMarketPriceAt time.Time `json:"lastMarketPriceAt,omitempty"`
 }
